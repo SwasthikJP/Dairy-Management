@@ -1,0 +1,146 @@
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+}
+
+
+nav{
+  background-color: #1E2663;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+h1{
+  color: white;
+}
+
+.main{
+  display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+  min-height: calc(100vh - 4rem);
+}
+
+.navBar{
+  display: flex;
+  flex-direction: column;
+ 
+gap: 1.3rem;
+padding: 1.4rem 1.1rem;
+background-color: #D9D7F1;
+}
+
+.navBut{
+background-color: #FEECE9;
+outline: none;
+border: none;
+font-size: medium;
+font-weight: 600;
+padding: 0.5rem 0.7rem;
+border-radius: 1rem;
+cursor: pointer;
+}
+
+#staff{
+  /* background-color: tomato; */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  gap: 1.2rem;
+}
+
+
+
+form{
+  min-height: 35%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  /* background-color: yellow; */
+  align-items: flex-start;
+}
+
+.formdiv{
+  display: flex;
+  width: 100%;
+  /* background-color: tomato; */
+  gap: 2rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+
+
+.group{
+  margin-top: 1rem;
+  align-self: center;
+}
+
+.group button{
+  background-color: #D9D7F1;
+  font-weight: 600;
+  font-size: medium;
+  border-radius: 1rem;
+  padding: 0.3rem 0.6rem;
+  border: 2px solid #D9D7F1;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.col1, .col2,.col3,.col4{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+
+.col3{
+  margin-left: 3rem;
+}
+
+label{
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+input,select{
+padding: 0.35rem;
+border-radius: 0.5rem;
+border:2px solid #D9D7F1;
+}
+
+#search{
+  margin-left: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+}
+
+hr{
+  background-color: black;
+}
+
+th{
+  background-color: #D9D7F1;
+}
+
+td{
+  text-align: center;
+}
+
+tr:hover{
+  cursor: pointer;
+  background-color: #d9d7f17c;
+}
+
+.deleteBut{
+  border-radius: 0.3rem;
+  border: 1px solid black;
+  padding: 0.3rem;
+  cursor: pointer;
+}
+
+.deleteBut:hover{
+  background-color: rgba(128, 128, 128, 0.288);
+}
