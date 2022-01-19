@@ -1,15 +1,15 @@
+
+
 import {  useEffect, useState } from "react";
 import axios from "axios";
-import { ToastContainer,toast } from "react-toastify";
+import {toast } from "react-toastify";
 
-export default function Staff(props){
+export default function Consumer(props){
 
-    const [sid,setsid]=useState("");
-    const [sname,setsname]=useState("");
+    const [cid,setcid]=useState("");
+    const [cname,setcname]=useState("");
     const [address,setaddress]=useState("");
-    const [gender,setgender]=useState("M");
-    const [date,setdate]=useState(new Date().toDateString());
-    const [password,setpassword]=useState("");
+    const [contact,setcontact]=useState("");
     const [tabledata,settabledata]=useState([]);
     const [updatedata,setupdatedata]=useState(false);
     const [search,setsearch]=useState(false);
@@ -19,7 +19,7 @@ export default function Staff(props){
     },[]);
 
     const gettabledata=async()=>{
-        await axios.post('http://localhost:8000/tabledata',{table:"STAFF"})
+        await axios.post('http://localhost:8000/tabledata',{table:"CONSUMER"})
         .then((res)=>{
             console.log(res.data);
             settabledata(res.data);
@@ -32,26 +32,24 @@ export default function Staff(props){
 
     const clearInput=(e)=>{
         e.preventDefault();
-        setsid("");
-        setsname("");
+        setcid("");
+        setcname("");
         setaddress("");
-        setgender("M");
+        setcontact("");
         setupdatedata(false);
-        setpassword("");
     }
 
     const insertData=async(e)=>{
      e.preventDefault();
      console.log("hee");
      var data={
-         sid,
-         sname,
+         cid,
+         cname,
          address,
-         gender,
-         password
+         contact
      }
      console.log(`http://localhost:8000/${updatedata? "updatestaff": "insertstaff"}`)
-     await axios.post(`http://localhost:8000/${updatedata? "updatestaff": "insertstaff"}`,data)
+     await axios.post(`http://localhost:8000/${updatedata? "updateconsumer": "insertconsumer"}`,data)
      .then((res)=>{
          console.log(res);
           clearInput(e);
@@ -69,22 +67,21 @@ export default function Staff(props){
         console.log("hee");
         var data={};
 
-            if(sid!==""){
-            data['SID']=sid;
+            if(cid!==""){
+            data['cid']=cid;
             }  
-            if(sname!==""){
-                data['SNAME']=sname
+            if(cname!==""){
+                data['cname']=cname
             }
             if(address!==""){
                 data['address']=address
             } 
-            if(password!==""){
-                data['PASSWORD']=password
+            if(contact!==""){
+                data['contact']=contact
             }
-            data['GENDER']=gender;
 
-        console.log(`http://localhost:8000/searchstaff`)
-        await axios.post(`http://localhost:8000/searchstaff`,data)
+        console.log(`http://localhost:8000/searchproducer`)
+        await axios.post(`http://localhost:8000/searchconsumer`,data)
         .then((res)=>{
             console.log(res);
              settabledata(res.data);
@@ -97,7 +94,7 @@ export default function Staff(props){
        }
 
     const deletedata=async(ele)=>{
-        await axios.post(`http://localhost:8000/deletestaff`,ele)
+        await axios.post(`http://localhost:8000/deleteconsumer`,ele)
         .then((res)=>{
             console.log(res);
             gettabledata();
@@ -112,29 +109,23 @@ export default function Staff(props){
     const setupdate=(ele)=>{
         console.log("gg")
         setupdatedata(true);
-        setsid(ele.SID);
-        setsname(ele.SNAME);
+        setcid(ele.CID);
+        setcname(ele.CNAME);
         setaddress(ele.ADDRESS);
-        setgender(ele.GENDER);
-        setpassword(ele.PASSWORD);
+        setcontact(ele.CONTACT);
     }
     
     return <div id="staff">
-        <h2>Add staff member</h2>
+        <h2>Add producer details</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
-            <label htmlFor="date">DATE :  <input disabled  type="text" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}} /> </label>
-            <label htmlFor="sid">SID {search? <input type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value.toLocaleUpperCase())}} />: <input  required type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value.toLocaleUpperCase())}} />}</label>
-            <label htmlFor="sname">STAFF NAME {search?<input minLength={3} type="text" id="sname" value={sname} onChange={(e)=>{setsname(e.target.value)}}></input>: <input required minLength={3} type="text" id="sname" value={sname} onChange={(e)=>{setsname(e.target.value)}} />}</label>
+            <label htmlFor="sid">CID {search? <input type="text" id="sid" value={cid} onChange={(e)=>{setcid(e.target.value.toLocaleUpperCase())}} />: <input  required type="text" id="sid" value={cid} onChange={(e)=>{setcid(e.target.value.toLocaleUpperCase())}} />}</label>
+            <label htmlFor="sname">PRODUCER NAME {search?<input minLength={3} type="text" id="sname" value={cname} onChange={(e)=>{setcname(e.target.value)}}></input>: <input required minLength={3} type="text" id="sname" value={cname} onChange={(e)=>{setcname(e.target.value)}} />}</label>
             </div>
             <div className="col2">
             <label htmlFor="sid">ADDRESS {search? <input minLength={5} type="text" id="sid" value={address} onChange={(e)=>{setaddress(e.target.value)}}></input>:<input required minLength={5} type="text" id="sid" value={address} onChange={(e)=>{setaddress(e.target.value)}} /> }</label>
-            <label htmlFor="sid">GENDER <select name="gender" id="gender" value={gender} onChange={(e)=>{setgender(e.target.value)}}>
-                <option value="MALE">male</option>
-                <option value="FEMALE">female</option></select></label>
-            <label htmlFor="sid">PASSWORD {search? <input minLength={4} type="password" id="sid" value={password} onChange={(e)=>{setpassword(e.target.value)}}></input>:<input required minLength={4} type="password" id="sid" value={password} onChange={(e)=>{setpassword(e.target.value)}} /> }</label>
-               
+            <label htmlFor="contact">CONTACT {search? <input title="valid mobile number(10 digits)"  pattern="^[6-9]\d{9}" type="tel" name="contact" id="contact"  value={contact} onChange={(e)=>{setcontact(e.target.value)}}/>: <input title="valid mobile number(10 digits)"  required pattern="^[6-9]\d{9}" type="tel" name="contact" id="contact"  value={contact} onChange={(e)=>{setcontact(e.target.value)}}/>}</label>
                 </div>
                 </div>
                 <div className="group">
@@ -149,11 +140,10 @@ export default function Staff(props){
         <table>
             <thead>
             <tr>
-                <th>SID</th>
-                <th>DATE</th>
-                <th>STAFF NAME</th>
-                <th>GENDER</th>
+                <th>CID</th>
+                <th>PRODUCER NAME</th>
                 <th>ADDRESS</th>
+                <th>CONTACT</th>
                 <th></th>
             </tr>
             </thead>
@@ -162,19 +152,16 @@ export default function Staff(props){
             tabledata.map((ele,index)=>{
                 return <tr key={index} onDoubleClick={()=>setupdate(ele)}>
                 <td>
-                    {ele.SID}
+                    {ele.CID}
                 </td>
                 <td>
-                    {ele.DATE}
+                {ele.CNAME}
                 </td>
                 <td>
-                    {ele.SNAME}
+                {ele.ADDRESS}
                 </td>
                 <td>
-                    {ele.GENDER}
-                </td>
-                <td>
-                    {ele.ADDRESS}
+                    {ele.CONTACT}
                 </td>
                 <td>
                     <button className="deleteBut" onClick={()=>deletedata(ele)} >Delete</button>

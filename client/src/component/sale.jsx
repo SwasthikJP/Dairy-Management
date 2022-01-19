@@ -1,41 +1,194 @@
-
 import '../css/purchase.css';
-import { useState } from 'react';
+import axios from "axios";
+import { ToastContainer,toast } from "react-toastify";
+import { useState,useEffect } from 'react';
+
+import dateAndTime from 'date-and-time';
+
 export default function Sale(props){
 
-    const [sid,setsid]=useState("");
-    const [cname,setcname]=useState("");
-    const [address,setaddress]=useState("");
-    const [contact,setcontact]=useState("");
+    let storage=window.localStorage;
+    const [sid,setsid]=useState(()=>{
+        return storage.getItem('loginsid')||""
+    });
+    const [cid,setcid]=useState("");
     const [quantity,setquantity]=useState("");
     const [rate,setrate]=useState("");
     const [amount,setamount]=useState("");
-    const [milktype,setmilktype]=useState("M");
+    const [milktype,setmilktype]=useState("COW");
     const [date,setdate]=useState(new Date().toDateString());
+    const [tabledata,settabledata]=useState([]);
+    const [updatedata,setupdatedata]=useState(false);
+    const [search,setsearch]=useState(false);
+    const [dcvalue,setdcvalue]=useState("");
+   const [stockdata,setstockdata]=useState([{CURQUANTITY:0,MAXQUANTITY:100},{CURQUANTITY:0,MAXQUANTITY:100}]);
+    
+    const [isstaff,setisstaff]=useState(()=>{
+        console.log("hhhhh"+storage.getItem('loginsid'))
+        if(storage.getItem('loginsid')==null){
+          return false;
+        }
+        return true;
+       })
+
+    useEffect(()=>{
+        gettabledata();
+        getstockdata();
+
+        },[]);
+    
+        const gettabledata=async()=>{
+            await axios.post('http://localhost:8000/tabledata',{table:"BUYS",isstaff:isstaff,sid:storage.getItem('loginsid')||""})
+            .then((res)=>{
+                console.log(res.data);
+                settabledata(res.data);
+                setsid(storage.getItem('loginsid')||"")
+
+            })
+            .catch((err)=>{
+                console.log(err.response.data);
+                toast.error(err.response.data);
+            })
+        }
+
+        const getstockdata=async()=>{
+            await axios.post('http://localhost:8000/stockdata',{table:"STOCKS"})
+            .then((res)=>{
+                console.log(res.data);
+                if(res.data.length!=0){
+                setstockdata(res.data);
+                }
+            })
+            .catch((err)=>{
+                console.log(err.response.data);
+                toast.error(err.response.data);
+            })
+        }
+
+        const clearInput=(e)=>{
+            e.preventDefault();
+            setsid(storage.getItem('loginsid')||"");
+            setcid("");
+            setquantity("");
+            setrate("");
+            setamount("");
+            setmilktype("COW");
+            setupdatedata(false);
+        }
+
+        const setupdate=(ele)=>{
+            console.log("gg")
+            setupdatedata(true);
+            setsid(ele.SID);
+            setcid(ele.CID);
+            setdate(dateAndTime.format(new Date(ele.BDATE),'YYYY-MM-DD HH:mm:ss'));
+            setquantity(ele.QUANTITY);
+            setrate(ele.RATE);
+            setamount(ele.TOTALAMOUNT);
+            setmilktype(ele.MILKTYPE);
+            setdcvalue(ele.QUANTITY);
+        }
+
+        const insertData=async(e)=>{
+            e.preventDefault();
+            console.log("hee");
+            var data={
+                sid,
+                cid,
+                quantity,rate,amount,milktype,date,dcvalue
+            }
+            console.log(`http://localhost:8000/${updatedata? "updatebuys": "insertbuys"}`)
+            await axios.post(`http://localhost:8000/${updatedata? "updatebuys": "insertbuys"}`,data)
+            .then((res)=>{
+                console.log(res);
+                 clearInput(e);
+                gettabledata();
+                getstockdata();
+                toast.success(updatedata?`Updated ${res.data.changedRows} tuples`:"Successfully inserted tuple!")
+            })
+            .catch((err)=>{
+             console.log(err.response.data);
+             toast.error(err.response.data);
+            })
+           }
+       
+           const searchData=async(e)=>{
+               e.preventDefault();
+           
+               console.log(date);
+               var data={};
+       
+                   if(sid!==""){
+                   data['SID']=sid;
+                   }  
+                   if(cid!==""){
+                       data['CID']=cid
+                   }
+                   if(quantity!==""){
+                       data['QUANTITY']=quantity
+                   }
+                   if(rate!==""){
+                       data['RATE']=rate
+                   }
+                   if(amount!==""){
+                       data['TOTALAMOUNT']=amount
+                   }
+                   if(date!==""){
+                       data['BDATE']=dateAndTime.format(new Date(date),'YYYY-MM-DD HH:mm:ss');
+                       
+                   }
+                   console.log(dateAndTime.format(new Date(date),'YYYY-MM-DD HH:mm:ss'))
+
+                   data['MILKTYPE']=milktype;
+       
+               console.log(`http://localhost:8000/searchbuys`)
+               await axios.post(`http://localhost:8000/searchbuys`,data)
+               .then((res)=>{
+                   console.log(res);
+                    settabledata(res.data);
+                    toast.success(`${res.data.length} results found`)
+               })
+               .catch((err)=>{
+                console.log(err.response.data);
+                toast.error(err.response.data);
+               })
+              }
+       
+           const deletedata=async(ele)=>{
+               await axios.post(`http://localhost:8000/deletebuys`,ele)
+               .then((res)=>{
+                   console.log(res);
+                   gettabledata();
+                   getstockdata();
+                   toast.success("Deleted 1 tuple!")
+               })
+               .catch((err)=>{
+                   console.log(err.response.data);
+                   toast.error(err.response.data);
+               })
+           }
     
     return <div id="staff">
-        <h2>Sale of milk</h2>
-        <form>
+        <h2>Purchase of milk</h2>
+        <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
-            <label htmlFor="date">DATE  <input type="text" disabled name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}}/></label>
-            <label htmlFor="sid">STAFF ID <input type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}}/></label>
-            <label htmlFor="pName">CUSTOMER NAME <input type="text" id="pName" value={cname} onChange={(e)=>{setcname(e.target.value)}} /></label>
+            <label htmlFor="date">DATE {search? <input  type="datetime-local" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}}/>: <input disabled type="text" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}}/>}</label>
+            <label htmlFor="sid">STAFF ID {search? <input  type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} />:  <input required disabled={isstaff} type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} />}</label>
+            <label htmlFor="pName">CONSUMER ID {search? <input  minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} />: <input required minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} /> }</label>
             </div>
             <div className="col2">
-            <label htmlFor="sid">ADDRESS <input type="text" id="sid" value={address} onChange={(e)=>{setaddress(e.target.value)}} /></label>
-            <label htmlFor="contact">CONTACT <input type="number" name="contact" id="contact" value={contact} onChange={(e)=>{setcontact(e.target.value)}} /></label>
-            <label htmlFor="quantity">QUANTITY <input type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value)}}/></label>
-
+            <label htmlFor="quantity">QUANTITY(litre)  {search? <input  type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/>: <input  required type="number" min={0.05} step={0.05} max={milktype==="COW"?stockdata[0]['CURQUANTITY']:stockdata[1].CURQUANTITY} name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/> }</label>
+            <label htmlFor="milktype">MILKTYPE   <select  name="milktype" id="milktype" value={milktype} onChange={(e)=>{setmilktype(e.target.value)}}>
+                <option value="COW">Cow</option>
+                <option value="BUFFALO">Buffalo</option></select></label>
            
                 </div>
               <div className="col3">
-              <label htmlFor="milktype">MILKTYPE <select name="milktype" id="milktype" value={milktype} onChange={(e)=>{setmilktype(e.target.value)}}>
-                <option value="C">Cow</option>
-                <option value="B">Buffalo</option></select></label>
+     
            
-            <label htmlFor="rate">RATE <input type="number" name="rate" id="rate" value={rate} onChange={(e)=>{setrate(e.target.value)}}/></label>
-            <label htmlFor="amount">AMOUNT <input type="number" name="amount" id="amount" value={amount} onChange={(e)=>{setamount(e.target.value)}}/></label>
+            <label htmlFor="rate">RATE  {search? <input type="number" name="rate" id="rate" value={rate} onChange={(e)=>{setrate(e.target.value);setamount(quantity*e.target.value);}}/>: <input required type="number" name="rate" id="rate" value={rate} onChange={(e)=>{setrate(e.target.value);setamount(quantity*e.target.value);}}/>}</label>
+            <label htmlFor="amount">AMOUNT {search? <input  type="number" name="amount" id="amount" value={amount} onChange={(e)=>{setamount(e.target.value)}}/>: <input required type="number" name="amount" id="amount" value={amount} onChange={(e)=>{setamount(e.target.value)}}/>}</label>
                
 
 
@@ -43,64 +196,63 @@ export default function Sale(props){
               
                 </div>
                 <div className="group">
-                <button type="submit">ADD</button>
-                <button type="reset">CLEAR</button>
-                <label htmlFor="search">Toggle to Search results:<input  type="checkbox" name="search" id="search" /></label>
+                <button type="submit">{search? "SEARCH" : updatedata? "UPDATE": "ADD"}</button>
+                <button onClick={(e)=>clearInput(e)}>CLEAR</button>
+                <label htmlFor="search">Toggle to Search results:<input value={search} onChange={()=>{setsearch((prev)=>
+                    {if(prev){setdate(new Date().toDateString())}else{setdate("");}return !prev;});gettabledata();}} 
+                     type="checkbox" name="search" id="search" /></label>
                 </div>
         </form>
         <hr />
         <table>
+            <thead>
             <tr>
                 <th>CID</th>
-                <th>CONSUMER NAME</th>
-                <th>DATE</th>
                 <th>STAFF ID</th>
-                <th>ADDRESS</th>
-                <th>CONTACT</th>
+                <th>DATE</th>
                 <th>MILKTYPE</th>
                 <th>QUANTITY</th>
                 <th>RATE</th>
                 <th>TOTAL AMOUNT</th>
-
                 <th></th>
-            </tr>
-            <tr>
-                <td>
-                    No 1
+                </tr>
+                </thead>
+                <tbody>
+            {tabledata.length!==0 &&
+            tabledata.map((ele,index)=>{
+                return <tr key={index} onDoubleClick={()=>setupdate(ele)}>
+                     <td>
+                    {ele.CID}
                 </td>
                 <td>
-                    No 1
+                    {ele.SID}
                 </td>
                 <td>
-                    No 1
+                    { dateAndTime.format(new Date(ele.BDATE),'YYYY-MM-DD HH:mm:ss')}
                 </td>
                 <td>
-                    No 1
+                    {ele.MILKTYPE}
                 </td>
                 <td>
-                    No 1
+                    {ele.QUANTITY}
                 </td>
                 <td>
-                    No 1
+                    {ele.RATE}
                 </td>
                 <td>
-                    No 1
+                    {ele.TOTALAMOUNT}
                 </td>
+               
                 <td>
-                    No 1
-                </td>
-                <td>
-                    No 1
-                </td>
-                <td>
-                    No 1
-                </td>
-                <td>
-                    <button className="deleteBut">Delete</button>
+                    <button className="deleteBut" onClick={()=>deletedata(ele)} >Delete</button>
                 </td>
             </tr>
+            })
+            
+           }
+           </tbody>
      
         </table>
-        <p style={{textAlign:'center'}}>No available data</p>
+        { tabledata.length==0 && <p style={{textAlign:'center'}}>No available data</p>}
     </div>
 }

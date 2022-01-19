@@ -1,0 +1,13 @@
+
+nav{
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    gap: 1rem;
+}
+.logoutbut{
+   background-color: #ffffff;
+   border-radius: 0.5rem;
+   border: 2px solid #D9D7F1;
+   cursor: pointer;
+}

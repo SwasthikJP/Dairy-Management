@@ -1,0 +1,46 @@
+
+#topbox{
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20%;
+}
+
+.box{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    text-align: center;
+    align-items: center;
+    gap: 1rem;
+ 
+}
+
+.box2{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 4rem;
+    max-width: 30%;
+    align-self: center;
+    background-color: #1e26636e;
+    border-radius: 0.5rem;
+    gap: 1rem;
+}
+
+.box button{
+    padding:0.5rem 1rem;
+    background-color: white;
+    border: 2px solid #D9D7F1;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+#undbutton{
+    border: none;
+    background-color: transparent;
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+}
