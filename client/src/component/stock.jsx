@@ -15,11 +15,32 @@ export default function Stock(props){
         },[]);
     
         const gettable1data=async()=>{
-            await axios.post('http://localhost:8000/tabledata',{table:"STOCKS"})
+           
+                await axios.post(`http://localhost:8000/stockdata`,{table:"STOCKS"})
+            .then((res)=>{
+                console.log(res.data);
+                if(storage.getItem('loginusername')){
+               gettable3data();
+                }else{
+                settable1data(res.data);
+                }
+                // settable1data(res.data);
+                // if(storage.getItem('loginusername')) { gettable2data()};
+            })
+            .catch((err)=>{
+                console.log(err.response.data);
+                toast.error(err.response.data);
+            }) 
+            
+        }
+        
+
+        const gettable3data=async()=>{
+            await axios.post(`http://localhost:8000/tabledata`,{table:"STOCKS"})
             .then((res)=>{
                 console.log(res.data);
                 settable1data(res.data);
-                if(storage.getItem('loginusername')) { gettable2data()};
+                 gettable2data();
             })
             .catch((err)=>{
                 console.log(err.response.data);

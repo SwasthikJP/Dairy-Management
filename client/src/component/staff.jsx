@@ -165,7 +165,7 @@ export default function Staff(props){
                     {ele.SID}
                 </td>
                 <td>
-                    {ele.DATE}
+                    {new Date(ele.DATE).toDateString()}
                 </td>
                 <td>
                     {ele.SNAME}

@@ -982,18 +982,92 @@ app.post("/stockdata",(req,res)=>{
     database:"dairy_management"
   });
  
-  connection.query(`SELECT * FROM ${req.body.table} WHERE SDATE='${datetime.format(new Date(),'YYYY-MM-DD')}'`,function(err,result){
-   try{
-       if(err){
-     throw err;
-   }
-   res.status(200).send(result);
-  }catch(err){
-    console.log(err.sqlMessage || "error occured");
-    res.status(500).send(err.sqlMessage || "error occured");
-  }
+  // connection.query(`SELECT * FROM ${req.body.table} WHERE SDATE='${datetime.format(new Date(),'YYYY-MM-DD')}'`,function(err,result){
+  //  try{
+  //      if(err){
+  //    throw err;
+  //  }
+  //  res.status(200).send(result);
+  // }catch(err){
+  //   console.log(err.sqlMessage || "error occured");
+  //   res.status(500).send(err.sqlMessage || "error occured");
+  // }
+  // });
+  // connection.end();
+
+  try{
+
+    connection.beginTransaction(function(err) {
+      if (err) { throw err; }
+      connection.query(`SELECT * FROM ${req.body.table} WHERE SDATE='${datetime.format(new Date(),'YYYY-MM-DD')}'`, function (error, resultss, fields) {
+        if (error) {
+          return connection.rollback(function() {
+            throw error;
+          });
+        }
+    
+    if(resultss.length==0){
+        connection.query(`INSERT INTO ${req.body.table} (STID,MILKTYPE,CURQUANTITY,SDATE,MAXQUANTITY) VALUES  (?,?,?,?,?)  `,['ST001','COW',0,datetime.format(new Date(),'YYYY-MM-DD'),100], function (error, result, fields) {
+          if (error) {
+            return connection.rollback(function() {
+              throw error;
+            });
+          }
+          connection.query(`INSERT INTO ${req.body.table} (STID,MILKTYPE,CURQUANTITY,SDATE,MAXQUANTITY) VALUES  (?,?,?,?,?)  `,['ST002','BUFFALO',0,datetime.format(new Date(),'YYYY-MM-DD'),100], function (error, result, fields) {
+            if (error) {
+              return connection.rollback(function() {
+                throw error;
+              });
+            }
+
+            connection.query(`SELECT * FROM ${req.body.table} WHERE SDATE='${datetime.format(new Date(),'YYYY-MM-DD')}'`, function (error, resultss, fields) {
+              if (error) {
+                return connection.rollback(function() {
+                  throw error;
+                });
+              }
+         
+    // console.log(result1)
+          connection.commit(function(err) {
+            if (err) {
+              return connection.rollback(function() {
+                throw err;
+              });
+            }
+            // console.log(result2)
+            console.log('success!');
+            console.log(resultss)
+            res.status(200).send(resultss);
+    
+          });
+      });
+    });
   });
-  connection.end();
+
+    }else{
+ connection.commit(function(err) {
+            if (err) {
+              return connection.rollback(function() {
+                throw err;
+              });
+            }
+            // console.log(result2)
+            console.log('success!');
+            console.log(resultss)
+            res.status(200).send(resultss);
+    
+          });
+    }
+    });
+  
+    });
+    }catch(err){
+      console.log(err);
+      res.status(500).send(err || "error occured");
+       
+    }
+
+
 })
 
 
@@ -1014,6 +1088,12 @@ app.post("/tabledata",(req,res)=>{
 query=`SELECT * FROM ${req.body.table} WHERE SID='${req.body.sid}'`
   }else{
     query=`SELECT * FROM ${req.body.table}`;
+  // query=`if exist(SELECT * FROM ${req.body.table} WHERE SDATE='2022-01-21') {
+  //   select * from ${req.body.table} where SDATE='2022-01-21'
+  // } else{
+  //     insert into ${req.body.table} values ('ST001','COW','0','2022-01-21',100)
+  // }`;
+  
   }
   connection.query(query,function(err,result){
    try{

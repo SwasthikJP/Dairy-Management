@@ -169,7 +169,7 @@ export default function Sale(props){
            }
     
     return <div id="staff">
-        <h2>Purchase of milk</h2>
+        <h2>Selling of milk</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
@@ -178,7 +178,7 @@ export default function Sale(props){
             <label htmlFor="pName">CONSUMER ID {search? <input  minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} />: <input required minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} /> }</label>
             </div>
             <div className="col2">
-            <label htmlFor="quantity">QUANTITY(litre)  {search? <input  type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/>: <input  required type="number" min={0.05} step={0.05} max={milktype==="COW"?stockdata[0]['CURQUANTITY']:stockdata[1].CURQUANTITY} name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/> }</label>
+            <label htmlFor="quantity">QUANTITY(litre)  {search? <input  type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/>: <input  required type="number" min={0}  max={milktype==="COW"?stockdata[0]['CURQUANTITY']:stockdata[1].CURQUANTITY} name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/> }</label>
             <label htmlFor="milktype">MILKTYPE   <select  name="milktype" id="milktype" value={milktype} onChange={(e)=>{setmilktype(e.target.value)}}>
                 <option value="COW">Cow</option>
                 <option value="BUFFALO">Buffalo</option></select></label>
