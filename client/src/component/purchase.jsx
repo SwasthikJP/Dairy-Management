@@ -21,7 +21,8 @@ export default function Purchase(props){
     const [search,setsearch]=useState(false);
    const [dcvalue,setdcvalue]=useState("");
    const [stockdata,setstockdata]=useState([{CURQUANTITY:0,MAXQUANTITY:100},{CURQUANTITY:0,MAXQUANTITY:100}]);
-  
+  const [producerdata,setproducerdata]=useState([]);
+
    const [isstaff,setisstaff]=useState(()=>{
     console.log("hhhhh"+storage.getItem('loginsid'))
     if(storage.getItem('loginsid')==null){
@@ -33,6 +34,7 @@ export default function Purchase(props){
     useEffect(()=>{
         gettabledata();
         getstockdata();
+        getproducerdata();
         },[]);
 
 
@@ -48,6 +50,21 @@ export default function Purchase(props){
                 console.log(err.response.data);
                 toast.error(err.response.data);
             })
+        }
+
+        const getproducerdata=async()=>{
+            await axios.post('http://localhost:8000/tabledata',{table:"PRODUCER"})
+        .then((res)=>{
+            console.log(res.data);
+            setproducerdata(res.data);
+            if(res.data.length!=0){
+            setpid(res.data[0].PID)
+            }
+        })
+        .catch((err)=>{
+            console.log(err.response.data);
+            toast.error(err.response.data);
+        })
         }
 
         const getstockdata=async()=>{
@@ -67,7 +84,7 @@ export default function Purchase(props){
         const clearInput=(e)=>{
             e.preventDefault();
             setsid(storage.getItem('loginsid')||"");
-            setpid("");
+            setpid(producerdata.length!=0?producerdata[0]['PID']:"");
             setquantity("");
             setrate("");
             setamount("");
@@ -97,6 +114,7 @@ export default function Purchase(props){
                 quantity,rate,amount,milktype,date,dcvalue
             }
             console.log(`http://localhost:8000/${updatedata? "updatepurchases": "insertpurchases"}`)
+            if(pid!==""){
             await axios.post(`http://localhost:8000/${updatedata? "updatepurchases": "insertpurchases"}`,data)
             .then((res)=>{
                 console.log(res);
@@ -109,6 +127,9 @@ export default function Purchase(props){
              console.log(err.response.data);
              toast.error(err.response.data);
             })
+        }else{
+            toast.error("Please Add Producer!");
+        }
            }
        
            const searchData=async(e)=>{
@@ -141,6 +162,7 @@ export default function Purchase(props){
                    data['MILKTYPE']=milktype;
        
                console.log(`http://localhost:8000/searchpurchases`)
+             
                await axios.post(`http://localhost:8000/searchpurchases`,data)
                .then((res)=>{
                    console.log(res);
@@ -151,6 +173,7 @@ export default function Purchase(props){
                 console.log(err.response.data);
                 toast.error(err.response.data);
                })
+            
               }
        
            const deletedata=async(ele)=>{
@@ -168,16 +191,28 @@ export default function Purchase(props){
            }
     
     return <div id="staff">
-        <h2>Purchase of milk</h2>
+        <h2>Purchase Of Milk</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
             <label htmlFor="date">DATE {search? <input  type="datetime-local" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}}/>: <input disabled type="text" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}}/>}</label>
             <label htmlFor="sid">STAFF ID {search? <input  type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} />:  <input required disabled={isstaff} type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} />}</label>
-            <label htmlFor="pName">PRODUCER ID {search? <input  minLength={3} type="text" id="pName" value={pid} onChange={(e)=>{setpid(e.target.value)}} />: <input required minLength={3} type="text" id="pName" value={pid} onChange={(e)=>{setpid(e.target.value)}} /> }</label>
+            <label htmlFor="pName">PRODUCER ID {search? <input  minLength={3} type="text" id="pName" value={pid} onChange={(e)=>{setpid(e.target.value)}} />: 
+            // <input required minLength={3} type="text" id="pName" value={pid} onChange={(e)=>{setpid(e.target.value)}} /> 
+            <select required  disabled={producerdata.length==0} name="producer id" id="milktype" value={pid} onChange={(e)=>{setpid(e.target.value)}}>
+           {producerdata.length!=0? producerdata.map((ele,index)=>{
+               return <option key={index} value={ele.PID}>{ele.PID}</option>
+           }):<option value="">NO PRODUCERS EXIST</option>
+
+        }
+            </select>
+           }</label>
             </div>
             <div className="col2">
-            <label htmlFor="quantity">QUANTITY(litre) {search? <input  type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/>: <input required type="number" min={0.05} step={0.05} max={milktype==="COW"?stockdata[0].MAXQUANTITY-stockdata[0].CURQUANTITY:stockdata[1].MAXQUANTITY-stockdata[1].CURQUANTITY} name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/> }</label>
+            <label htmlFor="quantity">QUANTITY (Litre) {search? <input  type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/>:
+             <input required type="number" min={0.5} step={0.05}
+             max={updatedata?null:milktype==="COW"?stockdata[0]['CURQUANTITY']===stockdata[0].MAXQUANTITY?null:stockdata[0].MAXQUANTITY-stockdata[0].CURQUANTITY:stockdata[1]['CURQUANTITY']===stockdata[1].MAXQUANTITY?null:stockdata[1].MAXQUANTITY-stockdata[1].CURQUANTITY} 
+              name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/> }</label>
             <label htmlFor="milktype">MILKTYPE   <select  name="milktype" id="milktype" value={milktype} onChange={(e)=>{setmilktype(e.target.value)}}>
                 <option value="COW">Cow</option>
                 <option value="BUFFALO">Buffalo</option></select></label>
@@ -197,9 +232,9 @@ export default function Purchase(props){
                 <div className="group">
                 <button type="submit">{search? "SEARCH" : updatedata? "UPDATE": "ADD"}</button>
                 <button onClick={(e)=>clearInput(e)}>CLEAR</button>
-                <label htmlFor="search">Toggle to Search results:<input value={search} onChange={()=>{setsearch((prev)=>
-                    {if(prev){setdate(new Date().toDateString())}else{setdate("");}return !prev;});gettabledata();}} 
-                     type="checkbox" name="search" id="search" /></label>
+                <label htmlFor="search"><input value={search} onChange={()=>{setsearch((prev)=>
+                    {if(prev){setdate(new Date().toDateString())}else{setdate("");}return !prev;});gettabledata();setpid(producerdata.length!=0?producerdata[0]['PID']:"");}} 
+                     type="checkbox" name="search" id="search" /> Check Here To Search</label>
                 </div>
         </form>
         <hr />

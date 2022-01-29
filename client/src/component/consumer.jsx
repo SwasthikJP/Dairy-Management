@@ -116,7 +116,7 @@ export default function Consumer(props){
     }
     
     return <div id="staff">
-        <h2>Add Customer details</h2>
+        <h2>Add Customer Details</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
@@ -133,7 +133,7 @@ export default function Consumer(props){
                 <button type="submit">{search? "SEARCH" : updatedata? "UPDATE": "ADD"}</button>
                
                 <button onClick={(e)=>clearInput(e)}>CLEAR</button>
-                <label htmlFor="search">Toggle to Search results:<input value={search} onChange={()=>{setsearch((prev)=>!prev);gettabledata();}} type="checkbox" name="search" id="search" /></label>
+                <label htmlFor="search"><input value={search} onChange={()=>{setsearch((prev)=>!prev);gettabledata();}} type="checkbox" name="search" id="search" /> Check Here To Search</label>
                 </div>
         </form>
         <hr />

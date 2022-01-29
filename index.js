@@ -354,7 +354,8 @@ connection.beginTransaction(function(err) {
   connection.query(`INSERT INTO PURCHASES (PID,SID,TOTALAMOUNT,MILKTYPE,QUANTITY,RATE) VALUES  (?,?,?,?,?,?  ) `,[req.body.pid,req.body.sid,req.body.amount,req.body.milktype,req.body.quantity,req.body.rate], function (error, results, fields) {
     if (error) {
       return connection.rollback(function() {
-        throw error;
+        console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
       });
     }
 
@@ -362,21 +363,24 @@ connection.beginTransaction(function(err) {
     connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY+${req.body.quantity} WHERE MILKTYPE=? AND SDATE=? `,[req.body.milktype,datetime.format(new Date(),'YYYY-MM-DD')], function (error, results, fields) {
       if (error) {
         return connection.rollback(function() {
-          throw error;
+          console.log(error);
+          res.status(500).send(error.sqlMessage || "error occured");
         });
       }
 
       connection.query(`INSERT INTO MANAGES (STID,SID,TYPE) VALUES  (?,?,?) `,[stid,req.body.sid,"credit"], function (error, results, fields) {
         if (error) {
           return connection.rollback(function() {
-            throw error;
+            console.log(error);
+            res.status(500).send(error.sqlMessage || "error occured");
           });
         }
 
       connection.commit(function(err) {
         if (err) {
           return connection.rollback(function() {
-            throw err;
+            console.log(err);
+            res.status(500).send(err.sqlMessage || "error occured");
           });
         }
         console.log('success!');
@@ -458,7 +462,8 @@ app.post("/updatepurchases",(req,res)=>{
       connection.query(`UPDATE PURCHASES SET ? WHERE PID=? AND SID=? AND PDATE=? `,[{quantity:req.body.quantity,milktype:req.body.milktype,TOTALAMOUNT:req.body.amount,rate:req.body.rate},req.body.pid,req.body.sid,datetime.format(new Date(req.body.date),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
         if (error) {
           return connection.rollback(function() {
-            throw error;
+            console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
           });
         }
     
@@ -466,7 +471,8 @@ app.post("/updatepurchases",(req,res)=>{
         connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY+${req.body.quantity-req.body.dcvalue} WHERE MILKTYPE=? AND SDATE=? `,[req.body.milktype,datetime.format(new Date(),'YYYY-MM-DD')], function (error, results, fields) {
           if (error) {
             return connection.rollback(function() {
-              throw error;
+              console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
             });
           }
     
@@ -475,7 +481,8 @@ app.post("/updatepurchases",(req,res)=>{
           connection.commit(function(err) {
             if (err) {
               return connection.rollback(function() {
-                throw err;
+                console.log(err);
+                res.status(500).send(err.sqlMessage || "error occured");
               });
             }
             console.log('success!');
@@ -529,7 +536,8 @@ app.post("/deletepurchases",(req,res)=>{
       connection.query(`DELETE FROM PURCHASES WHERE PID=? AND SID=? AND PDATE=?  `,[req.body.PID,req.body.SID,datetime.format(new Date(req.body.PDATE),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
         if (error) {
           return connection.rollback(function() {
-            throw error;
+            console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
           });
         }
     
@@ -537,7 +545,8 @@ app.post("/deletepurchases",(req,res)=>{
         connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY-${req.body.QUANTITY} WHERE MILKTYPE=? AND SDATE=? `,[req.body.MILKTYPE,datetime.format(new Date(req.body.PDATE),'YYYY-MM-DD')], function (error, results, fields) {
           if (error) {
             return connection.rollback(function() {
-              throw error;
+              console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
             });
           }
     
@@ -546,7 +555,8 @@ app.post("/deletepurchases",(req,res)=>{
           connection.commit(function(err) {
             if (err) {
               return connection.rollback(function() {
-                throw err;
+                console.log(err);
+                  res.status(500).send(err.sqlMessage || "error occured");
               });
             }
             console.log('success!');
@@ -729,31 +739,43 @@ app.post("/insertbuys",(req,res)=>{
     connection.beginTransaction(function(err) {
       if (err) { throw err; }
       connection.query(`INSERT INTO BUYS (CID,SID,TOTALAMOUNT,MILKTYPE,QUANTITY,RATE) VALUES  (?,?,?,?,?,?  ) `,[req.body.cid,req.body.sid,req.body.amount,req.body.milktype,req.body.quantity,req.body.rate], function (error, results, fields) {
+    
         if (error) {
           return connection.rollback(function() {
-            throw error;
-          });
+           
+              console.log(error);
+              res.status(500).send(error.sqlMessage || "error occured");
+            });
         }
     
     
         connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY-${req.body.quantity} WHERE MILKTYPE=? AND SDATE=? `,[req.body.milktype,datetime.format(new Date(),'YYYY-MM-DD')], function (error, results, fields) {
           if (error) {
             return connection.rollback(function() {
-              throw error;
+            
+                  console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
+                
             });
           }
     
           connection.query(`INSERT INTO MANAGES (STID,SID,TYPE) VALUES  (?,?,?) `,[stid,req.body.sid,"debit"], function (error, results, fields) {
             if (error) {
               return connection.rollback(function() {
-                throw error;
+                
+                    console.log(error);
+                    res.status(500).send(error.sqlMessage || "error occured");
+                  
               });
             }
     
           connection.commit(function(err) {
             if (err) {
               return connection.rollback(function() {
-                throw err;
+                
+                    console.log(err);
+                    res.status(500).send(err.sqlMessage || "error occured");
+                  
               });
             }
             console.log('success!');
@@ -762,11 +784,12 @@ app.post("/insertbuys",(req,res)=>{
           });
         });
       });
+      
     });
     });
     }catch(err){
       console.log(err);
-      res.status(500).send(err || "error occured");
+      res.status(500).send(err.sqlMessage || "error occured");
        
     }
 
@@ -804,7 +827,8 @@ app.post("/updatebuys",(req,res)=>{
       connection.query(`UPDATE BUYS SET ? WHERE CID=? AND SID=? AND BDATE=? `,[{quantity:req.body.quantity,milktype:req.body.milktype,TOTALAMOUNT:req.body.amount,rate:req.body.rate},req.body.cid,req.body.sid,datetime.format(new Date(req.body.date),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
         if (error) {
           return connection.rollback(function() {
-            throw error;
+            console.log(error);
+            res.status(500).send(error.sqlMessage || "error occured");
           });
         }
     
@@ -812,7 +836,8 @@ app.post("/updatebuys",(req,res)=>{
         connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY-${req.body.quantity-req.body.dcvalue} WHERE MILKTYPE=? AND SDATE=? `,[req.body.milktype,datetime.format(new Date(),'YYYY-MM-DD')], function (error, results, fields) {
           if (error) {
             return connection.rollback(function() {
-              throw error;
+              console.log(error);
+              res.status(500).send(error.sqlMessage || "error occured");
             });
           }
     
@@ -821,7 +846,8 @@ app.post("/updatebuys",(req,res)=>{
           connection.commit(function(err) {
             if (err) {
               return connection.rollback(function() {
-                throw err;
+                console.log(err);
+              res.status(500).send(err.sqlMessage || "error occured");
               });
             }
             console.log('success!');
@@ -874,7 +900,8 @@ app.post("/deletebuys",(req,res)=>{
       connection.query(`DELETE FROM BUYS WHERE CID=? AND SID=? AND BDATE=?  `,[req.body.CID,req.body.SID,datetime.format(new Date(req.body.BDATE),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
         if (error) {
           return connection.rollback(function() {
-            throw error;
+            console.log(error);
+              res.status(500).send(error.sqlMessage || "error occured");
           });
         }
     
@@ -882,7 +909,8 @@ app.post("/deletebuys",(req,res)=>{
         connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY+${req.body.QUANTITY} WHERE MILKTYPE=? AND SDATE=? `,[req.body.MILKTYPE,datetime.format(new Date(req.body.BDATE),'YYYY-MM-DD')], function (error, results, fields) {
           if (error) {
             return connection.rollback(function() {
-              throw error;
+              console.log(error);
+              res.status(500).send(error.sqlMessage || "error occured");
             });
           }
     
@@ -891,7 +919,8 @@ app.post("/deletebuys",(req,res)=>{
           connection.commit(function(err) {
             if (err) {
               return connection.rollback(function() {
-                throw err;
+                console.log(err);
+                res.status(500).send(err.sqlMessage || "error occured");
               });
             }
             console.log('success!');
@@ -1002,28 +1031,32 @@ app.post("/stockdata",(req,res)=>{
       connection.query(`SELECT * FROM ${req.body.table} WHERE SDATE='${datetime.format(new Date(),'YYYY-MM-DD')}'`, function (error, resultss, fields) {
         if (error) {
           return connection.rollback(function() {
-            throw error;
+            console.log(error);
+            res.status(500).send(error.sqlMessage || "error occured");
           });
         }
     
     if(resultss.length==0){
-        connection.query(`INSERT INTO ${req.body.table} (STID,MILKTYPE,CURQUANTITY,SDATE,MAXQUANTITY) VALUES  (?,?,?,?,?)  `,['ST001','COW',0,datetime.format(new Date(),'YYYY-MM-DD'),100], function (error, result, fields) {
+        connection.query(`INSERT INTO ${req.body.table} (STID,MILKTYPE,CURQUANTITY,SDATE,MAXQUANTITY) VALUES  (?,?,?,?,?)  `,['ST001','COW',0,datetime.format(new Date(),'YYYY-MM-DD'),2000], function (error, result, fields) {
           if (error) {
             return connection.rollback(function() {
-              throw error;
+              console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
             });
           }
-          connection.query(`INSERT INTO ${req.body.table} (STID,MILKTYPE,CURQUANTITY,SDATE,MAXQUANTITY) VALUES  (?,?,?,?,?)  `,['ST002','BUFFALO',0,datetime.format(new Date(),'YYYY-MM-DD'),100], function (error, result, fields) {
+          connection.query(`INSERT INTO ${req.body.table} (STID,MILKTYPE,CURQUANTITY,SDATE,MAXQUANTITY) VALUES  (?,?,?,?,?)  `,['ST002','BUFFALO',0,datetime.format(new Date(),'YYYY-MM-DD'),2000], function (error, result, fields) {
             if (error) {
               return connection.rollback(function() {
-                throw error;
+                console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
               });
             }
 
             connection.query(`SELECT * FROM ${req.body.table} WHERE SDATE='${datetime.format(new Date(),'YYYY-MM-DD')}'`, function (error, resultss, fields) {
               if (error) {
                 return connection.rollback(function() {
-                  throw error;
+                  console.log(error);
+                  res.status(500).send(error.sqlMessage || "error occured");
                 });
               }
          
@@ -1031,7 +1064,8 @@ app.post("/stockdata",(req,res)=>{
           connection.commit(function(err) {
             if (err) {
               return connection.rollback(function() {
-                throw err;
+                console.log(err);
+                res.status(500).send(err.sqlMessage || "error occured");
               });
             }
             // console.log(result2)
@@ -1048,7 +1082,8 @@ app.post("/stockdata",(req,res)=>{
  connection.commit(function(err) {
             if (err) {
               return connection.rollback(function() {
-                throw err;
+                console.log(err);
+                  res.status(500).send(err.sqlMessage || "error occured");
               });
             }
             // console.log(result2)

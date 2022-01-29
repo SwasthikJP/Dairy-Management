@@ -22,7 +22,9 @@ export default function Sale(props){
     const [search,setsearch]=useState(false);
     const [dcvalue,setdcvalue]=useState("");
    const [stockdata,setstockdata]=useState([{CURQUANTITY:0,MAXQUANTITY:100},{CURQUANTITY:0,MAXQUANTITY:100}]);
+  const [consumerdata,setconsumerdata]=useState([]);
     
+
     const [isstaff,setisstaff]=useState(()=>{
         console.log("hhhhh"+storage.getItem('loginsid'))
         if(storage.getItem('loginsid')==null){
@@ -34,7 +36,7 @@ export default function Sale(props){
     useEffect(()=>{
         gettabledata();
         getstockdata();
-
+        getconsumerdata();
         },[]);
     
         const gettabledata=async()=>{
@@ -50,6 +52,22 @@ export default function Sale(props){
                 toast.error(err.response.data);
             })
         }
+
+        const getconsumerdata=async()=>{
+            await axios.post('http://localhost:8000/tabledata',{table:"CONSUMER"})
+        .then((res)=>{
+            console.log(res.data);
+            setconsumerdata(res.data);
+            if(res.data.length!=0){
+            setcid(res.data[0].CID)
+            }
+        })
+        .catch((err)=>{
+            console.log(err.response.data);
+            toast.error(err.response.data);
+        })
+        }
+
 
         const getstockdata=async()=>{
             await axios.post('http://localhost:8000/stockdata',{table:"STOCKS"})
@@ -68,7 +86,7 @@ export default function Sale(props){
         const clearInput=(e)=>{
             e.preventDefault();
             setsid(storage.getItem('loginsid')||"");
-            setcid("");
+            setcid(consumerdata.length!=0?consumerdata[0]['CID']:"");
             setquantity("");
             setrate("");
             setamount("");
@@ -98,6 +116,8 @@ export default function Sale(props){
                 quantity,rate,amount,milktype,date,dcvalue
             }
             console.log(`http://localhost:8000/${updatedata? "updatebuys": "insertbuys"}`)
+           
+            if(cid!==""){
             await axios.post(`http://localhost:8000/${updatedata? "updatebuys": "insertbuys"}`,data)
             .then((res)=>{
                 console.log(res);
@@ -110,6 +130,10 @@ export default function Sale(props){
              console.log(err.response.data);
              toast.error(err.response.data);
             })
+        }
+            else{
+                toast.error("Please Add Customer!");
+            }
            }
        
            const searchData=async(e)=>{
@@ -169,16 +193,29 @@ export default function Sale(props){
            }
     
     return <div id="staff">
-        <h2>Selling of milk</h2>
+        <h2>Selling Of Milk</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
             <label htmlFor="date">DATE {search? <input  type="datetime-local" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}}/>: <input disabled type="text" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}}/>}</label>
-            <label htmlFor="sid">STAFF ID {search? <input  type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} />:  <input required disabled={isstaff} type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} />}</label>
-            <label htmlFor="pName">CONSUMER ID {search? <input  minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} />: <input required minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} /> }</label>
+            <label htmlFor="sid">STAFF ID {search? <input  type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} />:<input required disabled={isstaff} type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value)}} /> 
+        }</label>
+            <label htmlFor="pName">CONSUMER ID {search? <input  minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} />:
+            //  <input required minLength={3} type="text" id="pName" value={cid} onChange={(e)=>{setcid(e.target.value)}} /> 
+            <select required  disabled={consumerdata.length==0} name="producer id" id="milktype" value={cid} onChange={(e)=>{setcid(e.target.value)}}>
+            {consumerdata.length!=0? consumerdata.map((ele,index)=>{
+                return <option key={index} value={ele.CID}>{ele.CID}</option>
+            }):<option value="">NO CONSUMERS EXIST</option>
+        }
+        </select>
+        }</label>
             </div>
             <div className="col2">
-            <label htmlFor="quantity">QUANTITY(litre)  {search? <input  type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/>: <input  required type="number" min={0}  max={milktype==="COW"?stockdata[0]['CURQUANTITY']:stockdata[1].CURQUANTITY} name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/> }</label>
+            <label htmlFor="quantity">QUANTITY (Litre)  {search? <input  type="number" name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/>: 
+            
+            <input   required type="number" min={0} step={0} 
+         max={updatedata?null:milktype==="COW"?stockdata[0]['CURQUANTITY']==0?null:stockdata[0]['CURQUANTITY']:stockdata[1]['CURQUANTITY']==0?null:stockdata[1].CURQUANTITY}
+            name="quantity" id="quantity" value={quantity} onChange={(e)=>{setquantity(e.target.value);setamount(rate*e.target.value)}}/> }</label>
             <label htmlFor="milktype">MILKTYPE   <select  name="milktype" id="milktype" value={milktype} onChange={(e)=>{setmilktype(e.target.value)}}>
                 <option value="COW">Cow</option>
                 <option value="BUFFALO">Buffalo</option></select></label>
@@ -198,9 +235,9 @@ export default function Sale(props){
                 <div className="group">
                 <button type="submit">{search? "SEARCH" : updatedata? "UPDATE": "ADD"}</button>
                 <button onClick={(e)=>clearInput(e)}>CLEAR</button>
-                <label htmlFor="search">Toggle to Search results:<input value={search} onChange={()=>{setsearch((prev)=>
-                    {if(prev){setdate(new Date().toDateString())}else{setdate("");}return !prev;});gettabledata();}} 
-                     type="checkbox" name="search" id="search" /></label>
+                <label htmlFor="search"><input value={search} onChange={()=>{setsearch((prev)=>
+                    {if(prev){setdate(new Date().toDateString())}else{setdate("");}return !prev;});gettabledata();setcid(consumerdata.length!=0?consumerdata[0]['CID']:"");}} 
+                     type="checkbox" name="search" id="search" />  Check Here To Search</label>
                 </div>
         </form>
         <hr />

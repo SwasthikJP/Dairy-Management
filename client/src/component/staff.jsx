@@ -120,11 +120,11 @@ export default function Staff(props){
     }
     
     return <div id="staff">
-        <h2>Add staff member</h2>
+        <h2>Add Staff Member</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
-            <label htmlFor="date">DATE :  <input disabled  type="text" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}} /> </label>
+            <label htmlFor="date">DATE   <input disabled  type="text" name="date" id="date" value={date} onChange={(e)=>{setdate(e.target.value)}} /> </label>
             <label htmlFor="sid">SID {search? <input type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value.toLocaleUpperCase())}} />: <input  required type="text" id="sid" value={sid} onChange={(e)=>{setsid(e.target.value.toLocaleUpperCase())}} />}</label>
             <label htmlFor="sname">STAFF NAME {search?<input minLength={3} type="text" id="sname" value={sname} onChange={(e)=>{setsname(e.target.value)}}></input>: <input required minLength={3} type="text" id="sname" value={sname} onChange={(e)=>{setsname(e.target.value)}} />}</label>
             </div>
@@ -142,7 +142,7 @@ export default function Staff(props){
                 <button type="submit">{search? "SEARCH" : updatedata? "UPDATE": "ADD"}</button>
                
                 <button onClick={(e)=>clearInput(e)}>CLEAR</button>
-                <label htmlFor="search">Toggle to Search results:<input value={search} onChange={()=>{setsearch((prev)=>!prev);gettabledata();}} type="checkbox" name="search" id="search" /></label>
+                <label htmlFor="search"><input value={search} onChange={()=>{setsearch((prev)=>!prev);gettabledata();}} type="checkbox" name="search" id="search" /> Check Here To Search</label>
                 </div>
         </form>
         <hr />

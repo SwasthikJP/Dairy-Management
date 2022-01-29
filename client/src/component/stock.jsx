@@ -60,7 +60,7 @@ export default function Stock(props){
         }
     
     return <div id="staff">
-        <h2>Stock of milk</h2>
+        <h2>Stock Of Milk</h2>
         <table>
             <thead>
             <tr>
@@ -100,7 +100,7 @@ export default function Stock(props){
        
         <hr />
         
-        {storage.getItem('loginusername') &&    <h2>Staff transaction</h2>}
+        {storage.getItem('loginusername') &&    <h2>Staff Transaction</h2>}
        {storage.getItem('loginusername') && <table>
             <thead>
             <tr>
