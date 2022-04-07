@@ -42,10 +42,10 @@ return <Navigate to="/login"/>
       <div className="navBar">
       <button className="navBut"   style={{boxShadow:curOption==0 ?"black 0px 0px 0px 2px":"none"}}  onClick={()=>setcurOption(0)}>Staff</button> 
       <button className="navBut"   style={{boxShadow:curOption==1 ?"black 0px 0px 0px 2px":"none"}}  onClick={()=>setcurOption(1)}>Producer</button>  
-      <button className="navBut"   style={{boxShadow:curOption==2 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(2)} >Purchase</button> 
+      <button className="navBut"   style={{boxShadow:curOption==2 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(2)} >Buy</button> 
        <button className="navBut"  style={{boxShadow:curOption==3 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(3)}>Stock</button> 
-       <button className="navBut"style={{boxShadow:curOption==4 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(4)}>Customer</button> 
-        <button className="navBut" style={{boxShadow:curOption==5 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(5)}>Sales</button> 
+       <button className="navBut"style={{boxShadow:curOption==4 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(4)}>Consumer</button> 
+        <button className="navBut" style={{boxShadow:curOption==5 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(5)}>Sell</button> 
         
       </div>
 
@@ -61,10 +61,10 @@ return <Navigate to="/login"/>
     : <div className="main">
     <div className="navBar">
     <button className="navBut"   style={{boxShadow:curOption==0 ?"black 0px 0px 0px 2px":"none"}}  onClick={()=>setcurOption(0)}>Producer</button>  
-    <button className="navBut"   style={{boxShadow:curOption==1 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(1)} >Purchase</button> 
+    <button className="navBut"   style={{boxShadow:curOption==1 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(1)} >Buy</button> 
      <button className="navBut"  style={{boxShadow:curOption==2 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(2)}>Stock</button> 
      <button className="navBut"style={{boxShadow:curOption==3 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(3)}>Customer</button> 
-      <button className="navBut" style={{boxShadow:curOption==4 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(4)}>Sales</button> 
+      <button className="navBut" style={{boxShadow:curOption==4 ?"black 0px 0px 0px 2px":"none"}} onClick={()=>setcurOption(4)}>Sell</button> 
     </div>
 
    {curOption==0 && <Producer />}

@@ -45,7 +45,9 @@ app.post("/insertstaff",(req,res)=>{
     password:"",
     database:"dairy_management"
   });
-  connection.query(`INSERT INTO STAFF SET ? `,[{SID:req.body.sid,SNAME:req.body.sname,ADDRESS:req.body.address,GENDER:req.body.gender,PASSWORD:req.body.password}],function(err,result){
+  connection.query(`INSERT INTO STAFF SET ? `,[{SID:req.body.sid,SNAME:req.body.sname,
+  ADDRESS:req.body.address,GENDER:req.body.gender,PASSWORD:req.body.password}],
+  function(err,result){
    try{
        if(err){
      throw err;
@@ -68,7 +70,9 @@ app.post("/updatestaff",(req,res)=>{
     password:"",
     database:"dairy_management"
   });
-  connection.query(`UPDATE STAFF SET ? WHERE SID=? `,[{SNAME:req.body.sname,ADDRESS:req.body.address,GENDER:req.body.gender,PASSWORD:req.body.password},req.body.sid],function(err,result){
+connection.query(`UPDATE STAFF SET ? WHERE SID=? `,[{SNAME:req.body.sname,
+ADDRESS:req.body.address,GENDER:req.body.gender,PASSWORD:req.body.password},req.body.sid],
+    function(err,result){
    try{
        if(err){
      throw err;
@@ -716,7 +720,7 @@ app.post("/searchconsumer",(req,res)=>{
 
 
 
-app.post("/insertbuys",(req,res)=>{
+app.post("/insertsales",(req,res)=>{
   console.log(req.body);
   var connection=mysql.createConnection({
     host:'localhost',
@@ -738,7 +742,7 @@ app.post("/insertbuys",(req,res)=>{
 
     connection.beginTransaction(function(err) {
       if (err) { throw err; }
-      connection.query(`INSERT INTO BUYS (CID,SID,TOTALAMOUNT,MILKTYPE,QUANTITY,RATE) VALUES  (?,?,?,?,?,?  ) `,[req.body.cid,req.body.sid,req.body.amount,req.body.milktype,req.body.quantity,req.body.rate], function (error, results, fields) {
+      connection.query(`INSERT INTO SALES (CID,SID,TOTALAMOUNT,MILKTYPE,QUANTITY,RATE) VALUES  (?,?,?,?,?,?  ) `,[req.body.cid,req.body.sid,req.body.amount,req.body.milktype,req.body.quantity,req.body.rate], function (error, results, fields) {
     
         if (error) {
           return connection.rollback(function() {
@@ -798,7 +802,7 @@ app.post("/insertbuys",(req,res)=>{
 
 
 
-app.post("/updatebuys",(req,res)=>{
+app.post("/updatesales",(req,res)=>{
   console.log(req.body);
   var connection=mysql.createConnection({
     host:'localhost',
@@ -807,7 +811,7 @@ app.post("/updatebuys",(req,res)=>{
     database:"dairy_management"
   });
 
-  // connection.query(`UPDATE BUYS SET ? WHERE CID=? AND SID=? AND BDATE=? `,[{quantity:req.body.quantity,milktype:req.body.milktype,TOTALAMOUNT:req.body.amount,rate:req.body.rate},req.body.cid,req.body.sid,datetime.format(new Date(req.body.date),'YYYY-MM-DD HH:mm:ss')],function(err,result){
+  // connection.query(`UPDATE SALES SET ? WHERE CID=? AND SID=? AND SLDATE=? `,[{quantity:req.body.quantity,milktype:req.body.milktype,TOTALAMOUNT:req.body.amount,rate:req.body.rate},req.body.cid,req.body.sid,datetime.format(new Date(req.body.date),'YYYY-MM-DD HH:mm:ss')],function(err,result){
   //  try{
   //      if(err){
   //    throw err;
@@ -824,7 +828,7 @@ app.post("/updatebuys",(req,res)=>{
 
     connection.beginTransaction(function(err) {
       if (err) { throw err; }
-      connection.query(`UPDATE BUYS SET ? WHERE CID=? AND SID=? AND BDATE=? `,[{quantity:req.body.quantity,milktype:req.body.milktype,TOTALAMOUNT:req.body.amount,rate:req.body.rate},req.body.cid,req.body.sid,datetime.format(new Date(req.body.date),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
+      connection.query(`UPDATE SALES SET ? WHERE CID=? AND SID=? AND SLDATE=? `,[{quantity:req.body.quantity,milktype:req.body.milktype,TOTALAMOUNT:req.body.amount,rate:req.body.rate},req.body.cid,req.body.sid,datetime.format(new Date(req.body.date),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
         if (error) {
           return connection.rollback(function() {
             console.log(error);
@@ -868,7 +872,7 @@ app.post("/updatebuys",(req,res)=>{
 
 
 
-app.post("/deletebuys",(req,res)=>{
+app.post("/deletesales",(req,res)=>{
   console.log(req.body);
   var connection=mysql.createConnection({
     host:'localhost',
@@ -879,7 +883,7 @@ app.post("/deletebuys",(req,res)=>{
   //delete using pdate is not added
 
 
-  // connection.query(`DELETE FROM BUYS WHERE CID=? AND SID=? AND BDATE=?  `,[req.body.CID,req.body.SID,datetime.format(new Date(req.body.BDATE),'YYYY-MM-DD HH:mm:ss')],function(err,result){
+  // connection.query(`DELETE FROM SALES WHERE CID=? AND SID=? AND SLDATE=?  `,[req.body.CID,req.body.SID,datetime.format(new Date(req.body.SLDATE),'YYYY-MM-DD HH:mm:ss')],function(err,result){
   //  try{
   //      if(err){
   //    throw err;
@@ -897,7 +901,7 @@ app.post("/deletebuys",(req,res)=>{
 
     connection.beginTransaction(function(err) {
       if (err) { throw err; }
-      connection.query(`DELETE FROM BUYS WHERE CID=? AND SID=? AND BDATE=?  `,[req.body.CID,req.body.SID,datetime.format(new Date(req.body.BDATE),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
+      connection.query(`DELETE FROM SALES WHERE CID=? AND SID=? AND SLDATE=?  `,[req.body.CID,req.body.SID,datetime.format(new Date(req.body.SLDATE),'YYYY-MM-DD HH:mm:ss')], function (error, resultss, fields) {
         if (error) {
           return connection.rollback(function() {
             console.log(error);
@@ -906,7 +910,7 @@ app.post("/deletebuys",(req,res)=>{
         }
     
     
-        connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY+${req.body.QUANTITY} WHERE MILKTYPE=? AND SDATE=? `,[req.body.MILKTYPE,datetime.format(new Date(req.body.BDATE),'YYYY-MM-DD')], function (error, results, fields) {
+        connection.query(`UPDATE STOCKS SET CURQUANTITY=CURQUANTITY+${req.body.QUANTITY} WHERE MILKTYPE=? AND SDATE=? `,[req.body.MILKTYPE,datetime.format(new Date(req.body.SLDATE),'YYYY-MM-DD')], function (error, results, fields) {
           if (error) {
             return connection.rollback(function() {
               console.log(error);
@@ -940,7 +944,7 @@ app.post("/deletebuys",(req,res)=>{
 })
 
 
-app.post("/searchbuys",(req,res)=>{
+app.post("/searchsales",(req,res)=>{
   console.log(req.body);
   var connection=mysql.createConnection({
     host:'localhost',
@@ -948,7 +952,7 @@ app.post("/searchbuys",(req,res)=>{
     password:"",
     database:"dairy_management"
   });
-  let query='SELECT * FROM BUYS WHERE ';
+  let query='SELECT * FROM SALES WHERE ';
   let conditions=[];
  for ( const key in req.body){
    conditions.push(`${key}='${req.body[key]}'`);
@@ -1110,8 +1114,6 @@ app.post("/stockdata",(req,res)=>{
 
 
 app.post("/tabledata",(req,res)=>{
-
-  console.log(req.body);
   var connection=mysql.createConnection({
     host:'localhost',
     user:'root',
@@ -1123,12 +1125,6 @@ app.post("/tabledata",(req,res)=>{
 query=`SELECT * FROM ${req.body.table} WHERE SID='${req.body.sid}'`
   }else{
     query=`SELECT * FROM ${req.body.table}`;
-  // query=`if exist(SELECT * FROM ${req.body.table} WHERE SDATE='2022-01-21') {
-  //   select * from ${req.body.table} where SDATE='2022-01-21'
-  // } else{
-  //     insert into ${req.body.table} values ('ST001','COW','0','2022-01-21',100)
-  // }`;
-  
   }
   connection.query(query,function(err,result){
    try{
@@ -1155,7 +1151,7 @@ app.post("/transactiontabledata",(req,res)=>{
     password:"",
     database:"dairy_management"
   });
-  connection.query(`SELECT * FROM PURCHASES,BUYS WHERE ORDER BY SID `,function(err,result){
+  connection.query(`SELECT * FROM PURCHASES,SALES WHERE ORDER BY SID `,function(err,result){
    try{
        if(err){
      throw err;

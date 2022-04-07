@@ -40,7 +40,7 @@ export default function Sale(props){
         },[]);
     
         const gettabledata=async()=>{
-            await axios.post('http://localhost:8000/tabledata',{table:"BUYS",isstaff:isstaff,sid:storage.getItem('loginsid')||""})
+            await axios.post('http://localhost:8000/tabledata',{table:"SALES",isstaff:isstaff,sid:storage.getItem('loginsid')||""})
             .then((res)=>{
                 console.log(res.data);
                 settabledata(res.data);
@@ -99,7 +99,7 @@ export default function Sale(props){
             setupdatedata(true);
             setsid(ele.SID);
             setcid(ele.CID);
-            setdate(dateAndTime.format(new Date(ele.BDATE),'YYYY-MM-DD HH:mm:ss'));
+            setdate(dateAndTime.format(new Date(ele.SLDATE),'YYYY-MM-DD HH:mm:ss'));
             setquantity(ele.QUANTITY);
             setrate(ele.RATE);
             setamount(ele.TOTALAMOUNT);
@@ -115,10 +115,10 @@ export default function Sale(props){
                 cid,
                 quantity,rate,amount,milktype,date,dcvalue
             }
-            console.log(`http://localhost:8000/${updatedata? "updatebuys": "insertbuys"}`)
+            console.log(`http://localhost:8000/${updatedata? "updatesales": "insertsales"}`)
            
             if(cid!==""){
-            await axios.post(`http://localhost:8000/${updatedata? "updatebuys": "insertbuys"}`,data)
+            await axios.post(`http://localhost:8000/${updatedata? "updatesales": "insertsales"}`,data)
             .then((res)=>{
                 console.log(res);
                  clearInput(e);
@@ -158,15 +158,15 @@ export default function Sale(props){
                        data['TOTALAMOUNT']=amount
                    }
                    if(date!==""){
-                       data['BDATE']=dateAndTime.format(new Date(date),'YYYY-MM-DD HH:mm:ss');
+                       data['SLDATE']=dateAndTime.format(new Date(date),'YYYY-MM-DD HH:mm:ss');
                        
                    }
                    console.log(dateAndTime.format(new Date(date),'YYYY-MM-DD HH:mm:ss'))
 
                    data['MILKTYPE']=milktype;
        
-               console.log(`http://localhost:8000/searchbuys`)
-               await axios.post(`http://localhost:8000/searchbuys`,data)
+               console.log(`http://localhost:8000/searchsales`)
+               await axios.post(`http://localhost:8000/searchsales`,data)
                .then((res)=>{
                    console.log(res);
                     settabledata(res.data);
@@ -179,7 +179,7 @@ export default function Sale(props){
               }
        
            const deletedata=async(ele)=>{
-               await axios.post(`http://localhost:8000/deletebuys`,ele)
+               await axios.post(`http://localhost:8000/deletesales`,ele)
                .then((res)=>{
                    console.log(res);
                    gettabledata();
@@ -205,7 +205,7 @@ export default function Sale(props){
             <select required  disabled={consumerdata.length==0} name="producer id" id="milktype" value={cid} onChange={(e)=>{setcid(e.target.value)}}>
             {consumerdata.length!=0? consumerdata.map((ele,index)=>{
                 return <option key={index} value={ele.CID}>{ele.CID}</option>
-            }):<option value="">NO CONSUMERS EXIST</option>
+            }):<option value="">NO CUSTOMERS EXIST</option>
         }
         </select>
         }</label>
@@ -265,7 +265,7 @@ export default function Sale(props){
                     {ele.SID}
                 </td>
                 <td>
-                    { dateAndTime.format(new Date(ele.BDATE),'YYYY-MM-DD HH:mm:ss')}
+                    { dateAndTime.format(new Date(ele.SLDATE),'YYYY-MM-DD HH:mm:ss')}
                 </td>
                 <td>
                     {ele.MILKTYPE}

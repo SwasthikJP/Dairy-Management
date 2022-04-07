@@ -116,7 +116,7 @@ export default function Consumer(props){
     }
     
     return <div id="staff">
-        <h2>Add Customer Details</h2>
+        <h2>Add Consumer Details</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">

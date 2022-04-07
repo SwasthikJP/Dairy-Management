@@ -191,7 +191,7 @@ export default function Purchase(props){
            }
     
     return <div id="staff">
-        <h2>Purchase Of Milk</h2>
+        <h2>Buying Of Milk</h2>
         <form onSubmit={(e)=>search? searchData(e):insertData(e)}>
             <div className="formdiv">
             <div className="col1">
